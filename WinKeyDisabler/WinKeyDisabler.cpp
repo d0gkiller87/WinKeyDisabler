@@ -78,6 +78,7 @@ void SaveConfig() {
 }
 
 bool winKeyPressed = false;
+bool winKeyReplayed = false;
 
 LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
   if ( nCode == HC_ACTION && g_disableWinKey ) {
@@ -91,6 +92,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
       if ( isKeyDown ) {
         if ( !winKeyPressed ) {
           winKeyPressed = true;
+          winKeyReplayed = false;
           DEBUG_LOG( "Blocked Win key down" );
           return 1;
         }
@@ -99,7 +101,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
         DEBUG_LOG( "Allowed Win key up" );
       }
     } else { // not Win key
-      if ( pKey->vkCode != VK_D && winKeyPressed ) {
+      if ( winKeyPressed && !winKeyReplayed && pKey->vkCode != VK_D ) {
         INPUT inputs[1] = {};
 
         // Resend Win key down
@@ -108,6 +110,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
         inputs[0].ki.dwFlags = 0;
 
         SendInput( 1, inputs, sizeof( INPUT ) );
+        winKeyReplayed = true;
         DEBUG_LOG( "Resent Win key down" );
       }
     }
