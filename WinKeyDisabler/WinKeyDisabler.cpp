@@ -14,6 +14,7 @@
 #endif
 
 // Constants
+#define VK_D 0x44
 const UINT WM_TRAYICON = WM_USER + 1;
 const UINT IDM_AUTOSTART = 1002;
 const UINT IDM_BUSY = 1003;
@@ -98,7 +99,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
         DEBUG_LOG( "Allowed Win key up" );
       }
     } else { // not Win key
-      if ( winKeyPressed ) {
+      if ( pKey->vkCode != VK_D && winKeyPressed ) {
         INPUT inputs[1] = {};
 
         // Resend Win key down
